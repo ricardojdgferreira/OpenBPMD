@@ -318,10 +318,11 @@ def equilibrate(min_pdb, parm, out_dir, eq_file_name):
     positions = input_positions
 
     # Go through the indices of all atoms that will be restrained
-    for atom in PDBFile(min_pdb).topology.atoms():
-        if not ('resname WAT' or 'resname SOL' or 'resname HOH' or 'resname CL' or 'resname NA' or 'resname POP' or 'resname DMP'):
-            if atom.name != 'H*':
-                restraint.addParticle(atom.index, PDBFile(min_pdb).positions[atom.index])
+	solute_resnames = {"ALA","ARG","ASN","ASP","CYS","GLN","GLU","GLY","HIS","ILE","LEU","LYS","MET","PHE","PRO","SER","THR","TRP","TYR","VAL",args.lig_resname}
+    pdb = PDBFile(min_pdb)
+    for atom in pdb.topology.atoms():
+        if atom.residue.name in solute_resnames and atom.element.symbol != "H":
+            restraint.addParticle(atom.index, pdb.positions[atom.index])
 
     integrator = LangevinIntegrator(300*kelvin, 1/picosecond,
                                     0.002*picoseconds)

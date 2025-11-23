@@ -96,7 +96,7 @@ def main(args):
     eq_file_name = 'equil_system.pdb'
     if not os.path.isfile(os.path.join(args.output,eq_file_name)):
         print("Equilibrating...")
-        equilibrate(min_pdb, parm, args.output, eq_file_name)
+        equilibrate(min_pdb, parm, args.output, eq_file_name, args.lig_resname)
     eq_pdb = os.path.join(args.output,eq_file_name)
     cent_eq_pdb = os.path.join(args.output,'centred_'+eq_file_name)
     if os.path.isfile(eq_pdb) and not os.path.isfile(cent_eq_pdb):
@@ -273,7 +273,7 @@ def minimize(parm, input_positions, out_dir, min_file_name):
     return None
 
 
-def equilibrate(min_pdb, parm, out_dir, eq_file_name):
+def equilibrate(min_pdb, parm, out_dir, eq_file_name, lig_resname):
     """A function that does a 500 ps NVT equilibration with position
     restraints, with a 5 kcal/mol/A**2 harmonic constant on solute heavy
     atoms, using a 2 fs timestep.
@@ -318,7 +318,7 @@ def equilibrate(min_pdb, parm, out_dir, eq_file_name):
     positions = input_positions
 
     # Go through the indices of all atoms that will be restrained
-	solute_resnames = {"ALA","ARG","ASN","ASP","CYS","GLN","GLU","GLY","HIS","ILE","LEU","LYS","MET","PHE","PRO","SER","THR","TRP","TYR","VAL",f"{args.lig_resname}"}
+	solute_resnames = {"ALA","ARG","ASN","ASP","CYS","GLN","GLU","GLY","HIS","ILE","LEU","LYS","MET","PHE","PRO","SER","THR","TRP","TYR","VAL",lig_resname}
     pdb = PDBFile(min_pdb)
     for atom in pdb.topology.atoms():
         if atom.residue.name in solute_resnames and atom.element.symbol != "H":

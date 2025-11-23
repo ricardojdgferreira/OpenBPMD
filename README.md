@@ -1,13 +1,13 @@
 # OpenBPMD - evaluating ligand pose stability using metadynamics
 
 ### Updates:
-  ### v1.0.0
+  v1.0.0
     original version (from Gervasiolab/OpenBPMD)
-  ### v1.0.1
+  v1.0.1
     _equilibrate_ function: restraints now use CustomExternalForce('k*periodicdistance(x, y, z, x0, y0, z0)^2') while excluding everything that is not protein or ligand (e.g., water, ions, lipids). This allows that membrane proteins and/or CHARMM forcefield can be used adequately
-  ### v1.0.2
+  v1.0.2
     new protein-ligand fingerprint interaction scoring method added (can be used instead of ContactScore with keyword "--score fingerprint") (inspired by https://github.com/molecularmodelingsection/TTMD)
-  ### v1.0.3
+  v1.0.3
     derived from v1.0.1, modified for protein-peptide (or protein-protein) interactions. Selection now is performed by "-lig_chain" instead of "-lig_resname".
     refactoring of cent_eq_pdb output (using MDAnalysis) to retain chain information (lost if MDTraj is used)
 

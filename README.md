@@ -2,7 +2,7 @@
 
 ### Updates:
 #### v1.0.0
-original version (from Gervasiolab/OpenBPMD)
+original version (from dlukauskis/OpenBPMD)
 #### v1.0.1
 _equilibration_ step: restraints now use CustomExternalForce('k*periodicdistance(x, y, z, x0, y0, z0)^2') while excluding everything that is not protein or ligand (e.g., water, ions, lipids). This allows that membrane proteins and/or CHARMM forcefield can be used adequately
 #### v1.0.2

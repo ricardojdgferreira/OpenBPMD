@@ -318,7 +318,7 @@ def equilibrate(min_pdb, parm, out_dir, eq_file_name):
     positions = input_positions
 
     # Go through the indices of all atoms that will be restrained
-	solute_resnames = {"ALA","ARG","ASN","ASP","CYS","GLN","GLU","GLY","HIS","ILE","LEU","LYS","MET","PHE","PRO","SER","THR","TRP","TYR","VAL",args.lig_resname}
+	solute_resnames = {"ALA","ARG","ASN","ASP","CYS","GLN","GLU","GLY","HIS","ILE","LEU","LYS","MET","PHE","PRO","SER","THR","TRP","TYR","VAL",f"{args.lig_resname}"}
     pdb = PDBFile(min_pdb)
     for atom in pdb.topology.atoms():
         if atom.residue.name in solute_resnames and atom.element.symbol != "H":

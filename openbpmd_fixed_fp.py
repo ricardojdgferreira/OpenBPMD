@@ -15,6 +15,10 @@ descriptn = \
 
     A composite score is calculated using the following formula:
     CompScore = PoseScore - 5 * ContactScore
+
+	Version 1.0.2
+      >> added a new scoring based on protein-ligand fingerprint interactions
+	     (derived from oddt.fingerprints, inspired from TTMD @ https://github.com/molecularmodelingsection/TTMD)
     """
 
 # OpenMM
@@ -35,12 +39,16 @@ import mdtraj as md
 import pandas as pd
 import parmed as pmd
 import glob
-import os
+import os, warnings
 
-__author__ = "Dominykas Lukauskis"
-__version__ = "1.0.0"
-__email__ = "dominykas.lukauskis.19@ucl.ac.uk"
+__author1__ = "Dominykas Lukauskis"
+__author2__ = "Ricardo J. Ferreira"
+__version__ = "1.0.2"
+__email1__ = "dominykas.lukauskis.19@ucl.ac.uk"
+__email2__ = "ricardo.ferreira@rgdiscovery.com"
 
+# supress warnings
+warnings.filterwarnings("ignore")
 
 def main(args):
     """Main entry point of the app. Takes in argparse.Namespace object as
@@ -642,7 +650,7 @@ if __name__ == "__main__":
     parser.add_argument("-hill_height", type=float, default=0.3,
                         help="the hill height in kcal/mol (default: %(default)f)")
     parser.add_argument("-score", type=str, default='contact',
-                        help="the scoring function to use for protein-ligand contacts (default: %(default)s)")
+                        help="the scoring function (contacts, fingerprints) to use for protein-ligand contacts (default: %(default)s)")
 
     args = parser.parse_args()
     main(args)

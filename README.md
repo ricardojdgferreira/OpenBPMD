@@ -4,15 +4,11 @@
 #### v1.0.0
 original version (from Gervasiolab/OpenBPMD)
 #### v1.0.1
-equilibration step: restraints now use CustomExternalForce('k*periodicdistance(x, y, z, x0, y0, z0)^2') 
-while excluding everything that is not protein or ligand (e.g., water, ions, lipids). This allows that 
-membrane proteins and/or CHARMM forcefield can be used adequately
+_equilibration_ step: restraints now use CustomExternalForce('k*periodicdistance(x, y, z, x0, y0, z0)^2') while excluding everything that is not protein or ligand (e.g., water, ions, lipids). This allows that membrane proteins and/or CHARMM forcefield can be used adequately
 #### v1.0.2
-new protein-ligand fingerprint interaction scoring method added (can be used instead of ContactScore with 
-keyword "--score fingerprint") (inspired by https://github.com/molecularmodelingsection/TTMD)
+new protein-ligand fingerprint interaction scoring method added (can be used instead of ContactScore with keyword _"--score fingerprint"_) (inspired by https://github.com/molecularmodelingsection/TTMD)
 #### v1.0.3
-derived from v1.0.1, modified for protein-peptide (or protein-protein) interactions. 
-Selection now is performed by "-lig_chain" instead of "-lig_resname".
+derived from v1.0.1, modified for protein-peptide (or protein-protein) interactions.  Selection now is performed by _"-lig_chain"_ instead of _"-lig_resname"_.
 refactoring of cent_eq_pdb output (using MDAnalysis) to retain chain information (lost if MDTraj is used)
 
 ### Background 

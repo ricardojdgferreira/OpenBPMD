@@ -15,6 +15,10 @@ descriptn = \
 
     A composite score is calculated using the following formula:
     CompScore = PoseScore - 5 * ContactScore
+	
+	Version 1.0.1
+      >> refactoring of how restraints are applied (to allow CHARMM forcefield and/or with membranes)
+	  >> more effective in supressing warnings
     """
 
 # OpenMM
@@ -32,12 +36,16 @@ import mdtraj as md
 import pandas as pd
 import parmed as pmd
 import glob
-import os
+import os, warnings
 
-__author__ = "Dominykas Lukauskis"
-__version__ = "1.0.0"
-__email__ = "dominykas.lukauskis.19@ucl.ac.uk"
+__author1__ = "Dominykas Lukauskis"
+__author2__ = "Ricardo J. Ferreira"
+__version__ = "1.0.1"
+__email1__ = "dominykas.lukauskis.19@ucl.ac.uk"
+__email2__ = "ricardo.ferreira@rgdiscovery.com"
 
+# supress warning
+warnings.filterwarnings("ignore")
 
 def main(args):
     """Main entry point of the app. Takes in argparse.Namespace object as
@@ -124,7 +132,6 @@ def main(args):
         trj_name = os.path.join(rep_dir,'trj.dcd')
                 
         PoseScoreArr = get_pose_score(cent_eq_pdb, trj_name, args.lig_resname)
-
         ContactScoreArr = get_contact_score(cent_eq_pdb, trj_name, args.lig_resname)
 
         # Calculate the CompScore at every frame

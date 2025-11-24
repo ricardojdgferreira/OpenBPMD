@@ -388,11 +388,11 @@ def produce(out_dir, idx, eq_pdb, parm, parm_file, coords_file, lig_chain, set_h
     x, y, z = prot_com[0], prot_com[1], prot_com[2]
 
     # ... and taking the heavy backbone atoms within 5A of the COM
-    sel_str = f'point {x} {y} {z} 5 and backbone and not name H*'
+    sel_str = f'(protein and not chainID {lig_chain} and backbone and not name H*) and point {x} {y} {z} 5'
     anchor_atoms = universe.select_atoms(sel_str)
     # ... or 10 angstrom
     if len(anchor_atoms) == 0:
-        sel_str = f'point {x} {y} {z} 10 and backbone and not name H*'
+        sel_str = f'(protein and not chainID {lig_chain} and backbone and not name H*) and point {x} {y} {z} 10'
         anchor_atoms = universe.select_atoms(sel_str)
 
     anchor_atom_idx = anchor_atoms.indices.tolist()

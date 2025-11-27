@@ -1,22 +1,27 @@
 #!/usr/bin/env python
 descriptn = \
     """
-    OpenBPMD - an open source implementation of Binding Pose Metadynamics
-    (BPMD) with OpenMM. Replicates the protocol as described by
-    Clark et al. 2016 (DOI: 10.1021/acs.jctc.6b00201).
+    OpenTTMD - an open source implementation of Thermal Titration
+    Molecular Dynamics (TTMD) with OpenMM. Replicates the protocol as described by
+    Pavan et al. 2022 (DOI: 10.1021/acs.jcim.2c00995).
 
-    Runs ten 10 ns metadynamics simulations that biases the RMSD of the ligand.
+    Runs sequential MD with increasing temperatures (default, 300 to 450) and scores
+	the ability of the ligand to maintain its native interactions with the target.
 
-    The stability of the ligand is calculated using the ligand RMSD (PoseScore)
-    and the persistence of the original noncovalent interactions between the
-    protein and the ligand (ContactScore). Stable poses have a low RMSD and
-    a high fraction of the native contacts preserved until the end of the
-    simulation.
+	Scoring function (interaction fingerprint from ODDT)
+	IFPcs = (A·B / ||A||||B||) * -1
 
-    A composite score is calculated using the following formula:
-    CompScore = PoseScore - 5 * ContactScore
-    
-    Version 1.0.4
+	MS coefficient (slope of the straight line that interpolates the 
+	                first and last points of the “titration profile”):
+	MS = (meanIFPcs(T_end) - (-1)) / (T_end - T_start)
+
+    The lower the MS is (between 0 and 1), the stronger is the binding
+	
+    Outputs:
+	  - titration_profile.png (with MS value)
+	  - titration_timeline.png (IFPcs and RMSD evolution over time)
+	
+    Version 1.0.1
       >> instead of N reps, it sequentially performs MD runs within
          the specified temperature ramp (300k-450k, dT=10K)
       >> uses fingerprint scoring (IFPcs) instead of ContactScore
@@ -25,6 +30,7 @@ descriptn = \
       >> now writes checkpoint files (MD runs restart from the previous step)
       >> nonbondedCutoff increased to 1.2*nanometers
     """
+
 
 # general
 import os, warnings, re
@@ -474,7 +480,7 @@ def collect_results(structure_file, write_dir):
         IFPtt.append(df['IFPcs'].tolist())				# for titration timeline
         IFPlist = df['IFPcs'].tolist()
         last_2_ns = len(IFPlist)//5
-        IFPtp.append(np.mean(IFPlist[-last_2_ns:]))		# for titration profile
+        IFPtp.append(np.mean(IFPlist[-last_2_ns:]))		# for titration profile (only last 2 ns from each trajectory)
     
     # getting rmsd from trajectories
     trajectories = [os.path.join(write_dir, f'rep_{idx}','trj.dcd') for idx in temperatures]
@@ -488,7 +494,7 @@ def collect_results(structure_file, write_dir):
     u_new = mda.Universe(structure_file, full_traj)
 
     # get time steps to use as x on axs[0] and axs[1]
-    time_steps = [ts.time for ts in u_new.trajectory]
+    time_steps = [ts.time/10 for ts in u_new.trajectory]
 
     # get RMSDs to use as y on axs[1]
     rmsd_prot = rms.RMSD(u_new, select='backbone',groupselections=['protein'], ref_frame=0).run()
@@ -511,11 +517,11 @@ def collect_results(structure_file, write_dir):
         s, e = edges[i], edges[i+1]
         axs[0].plot(x[s:e], fp_y[s:e], color=cmap(i), label=labels[i])
     axs[0].set_ylabel('IFPcs')
-    axs[0].set_xlabel('MD steps')
+    axs[0].set_xlabel('Time (ns)')
     axs[0].set_title('IFPcs')
     axs[0].set_xlim(0,time_steps[-1])
     axs[0].set_ylim(-1.1, 0.1)
-    axs[0].set_xticks(np.arange(0, len(time_steps)+1, 100))
+    axs[0].set_xticks(np.arange(0, len(time_steps)/10+1, 10))
     axs[0].legend()
     axs[0].legend(loc='center left', bbox_to_anchor=(1, 0.5))
 
@@ -523,11 +529,11 @@ def collect_results(structure_file, write_dir):
     axs[1].plot(x, r_y1, label='Backbone')
     axs[1].plot(x, r_y2, label='Ligand')
     axs[1].set_ylabel('RMSD (Å)')
-    axs[1].set_xlabel('MD steps')
+    axs[1].set_xlabel('Time (ns)')
     axs[1].set_title('RMSD')
     axs[1].set_xlim(0,time_steps[-1])
     axs[1].set_ylim(0)
-    axs[1].set_xticks(np.arange(0, len(time_steps)+1, 100))
+    axs[1].set_xticks(np.arange(0, len(time_steps)/10+1, 10))
     axs[1].legend()
     axs[1].legend(loc='center left', bbox_to_anchor=(1, 0.5))
     fig.tight_layout()
